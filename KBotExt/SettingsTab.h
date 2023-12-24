@@ -212,7 +212,7 @@ public:
 
 			if (ImGui::Button("Reset window size"))
 			{
-				S.Window.width = 730;
+				S.Window.width = 775;
 				S.Window.height = 530;
 				SetWindowPos(S.hwnd, nullptr, 0, 0, S.Window.width, S.Window.height, SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 
