@@ -1,0 +1,90 @@
+name: 🐞 Bug report
+description: Report broken functionality
+title: "[BUG] "
+labels: [bug]
+
+body:
+- type: markdown
+  attributes:
+    value: |
+      📋 **Guidelines:**
+
+      - Search through [existing issues](https://github.com/BennyExtreme/KBotExt/issues?q=is%3Aissue+label%3Abug) first to ensure that this bug has not been reported before.
+      - Write a descriptive title for your issue. Avoid generic or vague titles such as "Something's not working" or "A couple of problems".
+      - Keep your issue focused on one single problem. If you have multiple bug reports, please create separate issues for each of them.
+      - Provide as much context as possible in the details section. Include screenshots, screen recordings, links, references, or anything else you may consider relevant.
+
+- type: input
+  attributes:
+    label: Version
+    description: Which version of KBotExt does this bug affect?
+    placeholder: X.Y.Z
+  validations:
+    required: true
+
+- type: dropdown
+  attributes:
+    label: Where
+    description: |
+      In which tab did you find the problem?
+      If the problem is not in a tab or you don’t know, select none.
+    multiple: false
+    options:
+      - Login
+      - Game
+      - Profile
+      - Info
+      - Champs
+      - Skins
+      - Misc
+      - Custom
+      - Settings
+  validations:
+    required: false
+
+- type: dropdown
+  attributes:
+    label: Server
+    description: |
+      On which server did you encounter the error?
+      If you don’t know or the problem isn’t the specific server, select none.
+    multiple: false
+    options:
+      - BR (Brazil)
+      - EUNE (Europe Nordic & East)
+      - EUW (Europe West)
+      - LAN (Latin America North)
+      - LAS (Latin America South)
+      - NA (North America)
+      - OCE (Oceania)
+      - RU (Russia)
+      - TR (Turkey)
+      - JP (Japan)
+      - KR (Republic of Korea)
+      - PH (The Philippines)
+      - SG (Singapore, Malaysia, & Indonesia)
+      - TW (Taiwan, Hong Kong, and Macao)
+      - TH (Thailand)
+      - VN (Vietnam)
+      - PBE (Public Beta Environment)
+  validations:
+    required: false
+
+- type: textarea
+  attributes:
+    label: Details
+    description: Clear and thorough explanation of the bug.
+    placeholder: I was doing X expecting Y to happen, but Z happened instead.
+  validations:
+    required: true
+
+- type: textarea
+  attributes:
+    label: Steps to reproduce
+    description: Minimum steps required to reproduce the bug.
+    placeholder: |
+      - Step 1
+      - Step 2
+      - Step 3
+  validations:
+    required: true

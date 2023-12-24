@@ -1,0 +1,14 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 📥 Download x64
+    url: https://github.com/BennyExtreme/KBotExt/releases/latest/download/KBotExt.exe
+    about: Download the latest version of KBotExt for x64
+  - name: 📥 Download x86
+    url: https://github.com/BennyExtreme/KBotExt/releases/latest/download/KBotExt_x86.exe
+    about: Download the latest version of KBotExt for x86
+  - name: ✉️ My contacts
+    url: https://linktr.ee/BennyExtreme
+    about: Open the list of all my contacts
+  - name: 🔗 Main repository
+    url: https://github.com/KebsCS/KBotExt
+    about: Open the main repository from KebsCS

@@ -1,0 +1,113 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+
+env:
+  SOLUTION_FILE_PATH: .\KBotExt.sln
+  BUILD_CONFIGURATION: Release
+  RUN_NUMBER: ${{github.run_number}}
+
+permissions:
+  id-token: write
+  contents: write
+
+jobs:
+  Build-x64:
+    if: "contains(github.event.head_commit.message, '[build]')"
+    name: Build x64
+    runs-on: windows-latest
+    
+    steps:
+      - name: Checkout KBotExt repository 
+        uses: actions/checkout@v4.1.1
+        with:
+          submodules: recursive
+      
+      - name: Checkout vcpkg repository
+        uses: actions/checkout@v4.1.1
+        with:
+          repository: microsoft/vcpkg
+          path: vcpkg
+      
+      - name: Install MSBuild x64
+        uses: microsoft/setup-msbuild@v1.3.1
+        with:
+          msbuild-architecture: x64
+      
+      - name: Install vcpkg
+        run: |
+          .\vcpkg\bootstrap-vcpkg.bat
+          .\vcpkg\vcpkg integrate install
+      
+      - name: Install FreeType x64
+        run: .\vcpkg\vcpkg install freetype:x64-windows-static
+      
+      - name: Install cpr x64
+        run: .\vcpkg\vcpkg install cpr:x64-windows-static
+      
+      - name: Install JsonCpp x64
+        run: .\vcpkg\vcpkg install jsoncpp:x64-windows-static
+      
+      - name: Build KBotExt x64 solution
+        working-directory: .\
+        run: msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} /p:Platform=x64 ${{env.SOLUTION_FILE_PATH}}
+      
+      - name: Upload KBotExt x64 latest artifact
+        uses: actions/upload-artifact@v3.1.3
+        with:
+          name: KBotExt-${{env.RUN_NUMBER}}
+          path: ./x64/Release/KBotExt.exe
+          if-no-files-found: error
+  
+  Build-x86:
+    if: "contains(github.event.head_commit.message, '[build]')"
+    name: Build x86
+    runs-on: windows-latest
+    
+    steps:
+      - name: Checkout KBotExt repository 
+        uses: actions/checkout@v4.1.1
+        with:
+          submodules: recursive
+      
+      - name: Checkout vcpkg repository
+        uses: actions/checkout@v4.1.1
+        with:
+          repository: microsoft/vcpkg
+          path: vcpkg
+      
+      - name: Install MSBuild x64
+        uses: microsoft/setup-msbuild@v1.3.1
+        with:
+          msbuild-architecture: x64
+      
+      - name: Install vcpkg
+        run: |
+          .\vcpkg\bootstrap-vcpkg.bat
+          .\vcpkg\vcpkg integrate install
+      
+      - name: Install FreeType x86
+        run: .\vcpkg\vcpkg install freetype:x86-windows-static
+      
+      - name: Install cpr x86
+        run: .\vcpkg\vcpkg install cpr:x86-windows-static
+      
+      - name: Install JsonCpp x86
+        run: .\vcpkg\vcpkg install jsoncpp:x86-windows-static
+      
+      - name: Build KBotExt x86 solution
+        working-directory: .\
+        run: |
+          msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} /p:Platform=x86 ${{env.SOLUTION_FILE_PATH}}
+          cd .\Release\
+          ren KBotExt.exe KBotExt_x86.exe
+          cd ..
+      
+      - name: Upload KBotExt x86 latest artifact
+        uses: actions/upload-artifact@v3.1.3
+        with:
+          name: KBotExt-${{env.RUN_NUMBER}}
+          path: ./Release/KBotExt_x86.exe
+          if-no-files-found: error

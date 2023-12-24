@@ -1,0 +1,42 @@
+name: ✨ Feature request
+description: Request a new feature
+title: "[FEATURE] "
+labels: [enhancement]
+
+body:
+- type: markdown
+  attributes:
+    value: |
+      📋 **Guidelines:**
+
+      - Search through [existing issues](https://github.com/BennyExtreme/KBotExt/issues?q=is%3Aissue+label%3Aenhancement) first to ensure that this feature has not been requested before.
+      - Write a descriptive title for your issue. Avoid generic or vague titles such as "Some suggestions" or "Ideas for improvement".
+      - Keep your issue focused on one single problem. If you have multiple feature requests, please create separate issues for each of them.
+      - Provide as much context as possible in the details section. Include screenshots, screen recordings, links, references, or anything else you may consider relevant.
+
+- type: dropdown
+  attributes:
+    label: Where
+    description: |
+      In which tab should we add your new feature?
+      If the feature is not in a tab or you don’t know, select none.
+    multiple: false
+    options:
+      - Login
+      - Game
+      - Profile
+      - Info
+      - Champs
+      - Skins
+      - Misc
+      - Custom
+      - Settings
+  validations:
+    required: false
+
+- type: textarea
+  attributes:
+    label: Details
+    description: Clear and thorough explanation of the feature you have in mind.
+  validations:
+    required: true

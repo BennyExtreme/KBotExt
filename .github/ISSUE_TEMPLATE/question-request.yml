@@ -1,0 +1,22 @@
+name: ❓ Ask a question
+description: Request further information
+title: "[QUESTION] "
+labels: [question]
+
+body:
+- type: markdown
+  attributes:
+    value: |
+      📋 **Guidelines:**
+
+      - Search through [existing issues](https://github.com/BennyExtreme/KBotExt/issues?q=is%3Aissue+label%3Aquestion) first to ensure that this question has not been asked before.
+      - Write a descriptive title for your issue. Avoid generic or vague titles such as "Some questions" or "Help needed".
+      - Keep your issue focused on one single question. If you have multiple questions to ask, please create separate issues for each of them.
+      - Provide as much context as possible in the question section. Include screenshots, screen recordings, links, references, or anything else you may consider relevant.
+
+- type: textarea
+  attributes:
+    label: Question
+    description: Clear and thorough explanation of the question you have to ask.
+  validations:
+    required: true
