@@ -1,8 +1,10 @@
 .vs/
 x64/
+x86/
 Debug/
 Release/
 KBotExt/x64/
+KBotExt/x86/
 KBotExt/Debug/
 KBotExt/Release/
 KBotExt/config.JSON
