@@ -175,13 +175,55 @@ public:
 				std::string body = R"({ "summonerId":)" + summID + "}";
 				LCU::Request("POST", "https://127.0.0.1/lol-chat/v1/blocked-players", body);
 			}
-
+			ImGui::SameLine();
 			if (ImGui::Button("Copy to clipboard##infoTab"))
 			{
 				Utils::CopyToClipboard(sResultJson);
 			}
 
+			ImGui::Separator();
+
+			ImGui::Text("Lobby invites flood:");
+
+			ImGui::Columns(3, 0, false);
+
+			ImGui::SliderInt("Time(s)##sliderFloodTimes", &S.infoTab.floodTimes, 1, 100, "%d");
+
+			ImGui::NextColumn();
+
+			ImGui::SliderInt("Delay##sliderFloodDelay", &S.infoTab.floodDelay, 0, 10000, "%d ms");
+
+			ImGui::NextColumn();
+
+			if (ImGui::Button("Start"))
+			{
+				if (accID != "" && summID != "")
+				{
+					std::thread floodThread(&InfoTab::Flood, std::ref(accID), std::ref(summID));
+					floodThread.detach();
+				}
+			}
+
+			ImGui::Columns(1);
+
 			ImGui::EndTabItem();
+		}
+	}
+
+private:
+	static void Flood(std::string& accID, std::string& summID)
+	{
+		LCU::Request("POST", "https://127.0.0.1/lol-lobby/v2/lobby", "{\"queueId\":" + std::to_string(Clash) + "}");
+		LCU::Request("POST", "https://127.0.0.1/lol-lobby/v2/lobby/invitations", "[{\"toSummonerId\":" + accID + "}]");
+		LCU::Request("POST", "https://127.0.0.1/lol-lobby/v2/lobby/invitations", "[{\"toSummonerId\":" + summID + "}]");
+		LCU::Request("DELETE", "https://127.0.0.1/lol-lobby/v2/lobby");
+		for (int time = 0; time < S.infoTab.floodTimes - 1; time++)
+		{
+			std::this_thread::sleep_for(std::chrono::milliseconds(S.infoTab.floodDelay));
+			LCU::Request("POST", "https://127.0.0.1/lol-lobby/v2/lobby", "{\"queueId\":" + std::to_string(Clash) + "}");
+			LCU::Request("POST", "https://127.0.0.1/lol-lobby/v2/lobby/invitations", "[{\"toSummonerId\":" + accID + "}]");
+			LCU::Request("POST", "https://127.0.0.1/lol-lobby/v2/lobby/invitations", "[{\"toSummonerId\":" + summID + "}]");
+			LCU::Request("DELETE", "https://127.0.0.1/lol-lobby/v2/lobby");
 		}
 	}
 };

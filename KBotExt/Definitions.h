@@ -70,6 +70,7 @@ inline std::vector<Skin> ownedSkins;
 
 enum QueueID
 {
+	URF = 318,
 	DraftPick = 400,
 	SoloDuo = 420,
 	BlindPick = 430,
@@ -81,12 +82,15 @@ enum QueueID
 	BeginnerBots = 840,
 	IntermediateBots = 850,
 	ARURF = 900,
+	ARURF1v1_PBE = 901,
 	TFTNormal = 1090,
 	TFTRanked = 1100,
 	TFTTutorial = 1110,
 	TFTHyperRoll = 1130,
 	TFTDoubleUp = 1160,
+	TFTFortuneFavor = 1170,
 	NexusBlitz = 1300,
+	Arena = 1700,
 	Tutorial1 = 2000,
 	Tutorial2 = 2010,
 	Tutorial3 = 2020,

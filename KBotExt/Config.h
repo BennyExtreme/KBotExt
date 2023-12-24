@@ -25,17 +25,18 @@ struct Settings
 	bool streamProof = false;
 	bool debugger = false;
 	bool noAdmin = false;
-	bool checkPrerelease = false;
 
 	struct
 	{
-		int width = 730;
+		int width = 775;
 		int height = 530;
 	} Window;
 
 	struct
 	{
 		std::string playerName;
+		int floodTimes = 1;
+		int floodDelay = 0;
 	} infoTab;
 
 	struct
@@ -66,8 +67,7 @@ struct Settings
 		size_t indexSecondRole = 0;
 		size_t indexMultiSearch = 0;
 		bool autoAcceptEnabled = false;
-		bool instalockEnabled = false;
-		bool autoBanEnabled = false;
+		int instalockEnabled = 0;
 		int instalockId = 0;
 		int instalockDelay = 0;
 		std::string instantMessage;
@@ -117,9 +117,10 @@ public:
 				root["loginTab"]["leagueArgs"] = S.loginTab.leagueArgs;
 				root["streamProof"] = S.streamProof;
 				root["noAdmin"] = S.noAdmin;
-				root["checkPrerelease"] = S.checkPrerelease;
 
 				root["infoTab"]["playerName"] = S.infoTab.playerName;
+				root["infoTab"]["floodTimes"] = S.infoTab.floodTimes;
+				root["infoTab"]["floodDelay"] = S.infoTab.floodDelay;
 
 				root["customTab"]["method"] = S.customTab.method;
 				root["customTab"]["urlText"] = S.customTab.urlText;
@@ -135,7 +136,6 @@ public:
 				root["gameTab"]["indexMultiSearch"] = S.gameTab.indexMultiSearch;
 				root["gameTab"]["autoAcceptEnabled"] = S.gameTab.autoAcceptEnabled;
 				root["gameTab"]["instalockEnabled"] = S.gameTab.instalockEnabled;
-				root["gameTab"]["autoBanEnabled"] = S.gameTab.autoBanEnabled;
 				root["gameTab"]["instalockDelay"] = S.gameTab.instalockDelay;
 				root["gameTab"]["instalockId"] = S.gameTab.instalockId;
 				root["gameTab"]["instantMessage"] = S.gameTab.instantMessage;
@@ -196,11 +196,13 @@ public:
 					S.streamProof = t.asBool();
 				if (auto t = root["noAdmin"]; !t.empty())
 					S.noAdmin = t.asBool();
-				if (auto t = root["checkPrerelease"]; !t.empty())
-					S.checkPrerelease = t.asBool();
 
 				if (auto t = root["infoTab"]["playerName"]; !t.empty())
 					S.infoTab.playerName = t.asString();
+				if (auto t = root["infoTab"]["floodTimes"]; !t.empty())
+					S.infoTab.floodTimes = t.asInt();
+				if (auto t = root["infoTab"]["floodDelay"]; !t.empty())
+					S.infoTab.floodDelay = t.asInt();
 
 				if (auto t = root["customTab"]["method"]; !t.empty())
 					S.customTab.method = t.asString();
@@ -229,9 +231,7 @@ public:
 				if (auto t = root["gameTab"]["autoAcceptEnabled"]; !t.empty())
 					S.gameTab.autoAcceptEnabled = t.asBool();
 				if (auto t = root["gameTab"]["instalockEnabled"]; !t.empty())
-					S.gameTab.instalockEnabled = t.asBool();
-				if (auto t = root["gameTab"]["autoBanEnabled"]; !t.empty())
-					S.gameTab.autoBanEnabled = t.asBool();
+					S.gameTab.instalockEnabled = t.asInt();
 				if (auto t = root["gameTab"]["instalockDelay"]; !t.empty())
 					S.gameTab.instalockDelay = t.asInt();
 				if (auto t = root["gameTab"]["instalockId"]; !t.empty())

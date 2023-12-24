@@ -240,9 +240,9 @@ public:
 				cpr::Header authHeader = {
 					{"Content-Type", "application/json"},
 					{"Accept-Encoding", "deflate"},
-					{"User-Agent", "RiotClient/69.0.3.228.1352 rso-auth (Windows;10;;Home, x64)"},
+					{"User-Agent", "RiotClient/77.0.1.814.2013 rso-auth (Windows; 10;;Professional, x64)"},
 					{"Pragma", "no-cache"},
-					{"Accept-Language", "en-GB,en,*"},
+					{"Accept-Language", "en-US,en,*"},
 					{"Accept", "application/json, text/plain, */*"}
 				};
 
@@ -254,7 +254,7 @@ public:
 				std::regex regexStr("\"riotClientBuild\":\"(.*?)\"");
 				if (std::smatch m; std::regex_search(valoApi, m, regexStr))
 				{
-					session.UpdateHeader(cpr::Header{ {"User-Agent", "RiotClient/" + m[1].str() + " rso-auth (Windows;10;;Home, x64)"} });
+					session.UpdateHeader(cpr::Header{ {"User-Agent", "RiotClient/" + m[1].str() + " rso-auth (Windows; 10;;Professional, x64)"} });
 				}
 
 				session.SetBody(authData.toStyledString());
@@ -262,7 +262,7 @@ public:
 				session.Post();
 
 				Json::Value authData2;
-				authData2["language"] = "en_GB";
+				authData2["language"] = "en_US";
 				authData2["password"] = password;
 				authData2["region"] = Json::nullValue;
 				authData2["remember"] = false;
@@ -307,10 +307,10 @@ public:
 					{"Content-Type", "application/json"},
 					{"Accept-Encoding", "deflate"},
 					{"Upgrade-Insecure-Requests", "1"},
-					{"sec-ch-ua", R"("Not/A)Brand";v="99", "Google Chrome";v="115", "Chromium";v="115")"},
+					{"sec-ch-ua", R"("Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120")"},
 					{"sec-ch-ua-platform", "\"Windows\""},
 					{"sec-ch-ua-mobile", "?0"},
-					{"User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"},
+					{"User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"},
 					{"Sec-Fetch-Site", "cross-site"},
 					{"Sec-Fetch-Mode", "navigate"},
 					{"Sec-Fetch-Dest", "document"},
@@ -328,7 +328,7 @@ public:
 				session.Get();
 
 				Json::Value authData2;
-				authData2["language"] = "en_GB";
+				authData2["language"] = "en_US";
 				authData2["password"] = password;
 				authData2["region"] = Json::nullValue;
 				authData2["remember"] = false;

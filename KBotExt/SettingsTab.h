@@ -80,8 +80,6 @@ public:
 			ImGui::SameLine();
 			ImGui::HelpMarker("Hides the program in recordings and screenshots");
 
-			ImGui::Checkbox("Notify about prereleases", &S.checkPrerelease);
-
 			ImGui::Checkbox("Launch client without admin", &S.noAdmin);
 
 			if (ImGui::Checkbox("Register debugger IFEO", &S.debugger))
@@ -231,7 +229,7 @@ public:
 			ImGui::Text("Program's version: %s | Latest version: %s",
 				Misc::programVersion.c_str(), Misc::latestVersion.c_str());
 			ImGui::Text("GitHub repository:");
-			ImGui::TextURL("Click me!", "https://github.com/KebsCS/KBotExt", 1, 0);
+			ImGui::TextURL("Click me!", "https://github.com/BennyExtreme/KBotExt", 1, 0);
 
 			if (!result.empty())
 				ImGui::Separator();

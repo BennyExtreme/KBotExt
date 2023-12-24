@@ -44,9 +44,6 @@ bool Direct3D11Render::DirectXInit(const HWND hWnd)
 
 	Misc::CheckVersion();
 
-	if (S.checkPrerelease)
-		Misc::CheckPrerelease(S.fileName);
-
 	gamePatch = Misc::GetCurrentPatch();
 
 	std::thread t{ Misc::GetAllChampionSkins };
@@ -100,7 +97,7 @@ int Direct3D11Render::Render() const
 			currentInfo = "";
 	}
 
-	sprintf_s(buf, ("KBotExt by kebs - %s %s \t %s ###AnimatedTitle"), gamePatch.c_str(), connectedTo.c_str(), currentInfo.c_str());
+	sprintf_s(buf, ("KBotExt by kebs - BennyExtreme fork - %s %s \t %s ###AnimatedTitle"), gamePatch.c_str(), connectedTo.c_str(), currentInfo.c_str());
 
 	ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowSize(ImVec2(685, 462), ImGuiCond_FirstUseEver);

@@ -79,36 +79,16 @@ public:
 			if (ImGui::Button("ARAM"))
 				gameID = ARAM;
 
-			if (ImGui::Button("ARURF"))
-				gameID = ARURF;
+			if (ImGui::Button("Arena"))
+				gameID = Arena;
 
-			if (ImGui::Button("Nexus Blitz"))
-				gameID = NexusBlitz;
+			if (ImGui::Button("Clash"))
+				gameID = Clash;
 
-			if (ImGui::Button("ARURF 1V1 (PBE)"))
-				gameID = 901;
-
-			/*if (ImGui::Button("URF"))
-				gameID = 318;*/
+			if (ImGui::Button("None"))
+				result = LCU::Request("DELETE", "https://127.0.0.1/lol-lobby/v2/lobby");
 
 			ImGui::NextColumn();
-
-			if (ImGui::Button("TFT Normal"))
-				gameID = TFTNormal;
-
-			if (ImGui::Button("TFT Ranked"))
-				gameID = TFTRanked;
-
-			if (ImGui::Button("TFT Hyper Roll"))
-				gameID = TFTHyperRoll;
-
-			if (ImGui::Button("TFT Double Up"))
-				gameID = TFTDoubleUp;
-
-			ImGui::NextColumn();
-
-			if (ImGui::Button("TFT Tutorial"))
-				gameID = TFTTutorial;
 
 			if (ImGui::Button("Practice Tool"))
 			{
@@ -122,8 +102,47 @@ public:
 					R"({"customGameLobby":{"configuration":{"gameMode":"PRACTICETOOL","gameMutator":"","gameServerRegion":"","mapId":11,"mutators":{"id":1},"spectatorPolicy":"AllAllowed","teamSize":5},"lobbyName":"KBot","lobbyPassword":null},"isCustom":true})";
 			}
 
-			if (ImGui::Button("Clash"))
-				gameID = Clash;
+			if (ImGui::Button("TFT Normal"))
+				gameID = TFTNormal;
+
+			if (ImGui::Button("TFT Ranked"))
+				gameID = TFTRanked;
+
+			ImGui::NextColumn();
+
+			if (ImGui::Button("TFT Hyper Roll"))
+				gameID = TFTHyperRoll;
+
+			if (ImGui::Button("TFT Double Up"))
+				gameID = TFTDoubleUp;
+
+			if (ImGui::Button("TFT Tutorial"))
+				gameID = TFTTutorial;
+
+			static int indexGamemodes = -1;
+			auto labelGamemodes = "All Gamemodes";
+			if (indexGamemodes != -1)
+				labelGamemodes = gamemodes[indexGamemodes].second.c_str();
+
+			if (ImGui::BeginCombo("##combolGamemodes", labelGamemodes, 0))
+			{
+				for (size_t n = 0; n < gamemodes.size(); n++)
+				{
+					const bool is_selected = indexGamemodes == n;
+					if (ImGui::Selectable(gamemodes[n].second.c_str(), is_selected))
+						indexGamemodes = n;
+
+					if (is_selected)
+						ImGui::SetItemDefaultFocus();
+				}
+				ImGui::EndCombo();
+			}
+			ImGui::SameLine();
+
+			if (ImGui::Button("Create##gamemode"))
+			{
+				gameID = gamemodes[indexGamemodes].first;
+			}
 
 			ImGui::Columns(1);
 
@@ -162,31 +181,6 @@ public:
 				R"({"customGameLobby":{"configuration":{"gameMode":"ARAM","gameMutator":"","gameServerRegion":"","mapId":12,"mutators":{"id":1},"spectatorPolicy":"AllAllowed","teamSize":5},"lobbyName":"KBot","lobbyPassword":null},"isCustom":true})";
 
 			//"id" 1- blind 2- draft -4 all random 6- tournament draft
-
-			static int indexGamemodes = -1;
-			auto labelGamemodes = "All Gamemodes";
-			if (indexGamemodes != -1)
-				labelGamemodes = gamemodes[indexGamemodes].second.c_str();
-
-			if (ImGui::BeginCombo("##combolGamemodes", labelGamemodes, 0))
-			{
-				for (size_t n = 0; n < gamemodes.size(); n++)
-				{
-					const bool is_selected = indexGamemodes == n;
-					if (ImGui::Selectable(gamemodes[n].second.c_str(), is_selected))
-						indexGamemodes = n;
-
-					if (is_selected)
-						ImGui::SetItemDefaultFocus();
-				}
-				ImGui::EndCombo();
-			}
-			ImGui::SameLine();
-
-			if (ImGui::Button("Create##gamemode"))
-			{
-				gameID = gamemodes[indexGamemodes].first;
-			}
 
 			ImGui::NextColumn();
 
@@ -550,6 +544,7 @@ public:
 				isStillBeingFetched = false;
 
 			static ImGui::ComboAutoSelectData instalockComboData;
+			static ImGui::ComboAutoSelectData backupPickComboData;
 
 			if (onOpen)
 			{
@@ -558,8 +553,11 @@ public:
 				if (!instalockChamps.empty())
 				{
 					std::vector<std::string> instalockChampsNames;
+					std::vector<std::string> backupPickChampsNames;
 					instalockChampsNames.reserve(instalockChamps.size() + 1);
+					backupPickChampsNames.reserve(instalockChamps.size() + 1);
 					instalockChampsNames.emplace_back("Random");
+					backupPickChampsNames.emplace_back("None");
 
 					if (S.gameTab.instalockId == -1)
 					{
@@ -571,19 +569,39 @@ public:
 						std::ranges::copy(selectedChamp, instalockComboData.input);
 					}
 
+					if (S.gameTab.backupId == 0)
+					{
+						std::ranges::copy("None", backupPickComboData.input);
+					}
+					else
+					{
+						std::string selectedChamp = ChampIdToName(S.gameTab.backupId);
+						std::copy(selectedChamp.begin(), selectedChamp.end(), backupPickComboData.input);
+					}
+					
 					for (size_t i = 0; i < instalockChamps.size(); i++)
 					{
 						instalockChampsNames.emplace_back(instalockChamps[i].second);
+						backupPickChampsNames.emplace_back(instalockChamps[i].second);
 						if (instalockComboData.input == instalockChamps[i].second)
 						{
 							instalockComboData.index = i + 1;
 						}
+						if (backupPickComboData.input == instalockChamps[i].second)
+						{
+							backupPickComboData.index = i + 1;
+						}
 					}
 					instalockComboData.items = instalockChampsNames;
+					backupPickComboData.items = backupPickChampsNames;
 				}
 			}
 
-			ImGui::Checkbox("Instalock", &S.gameTab.instalockEnabled);
+			ImGui::RadioButton("Off", &S.gameTab.instalockEnabled, 0);
+			ImGui::SameLine();
+			ImGui::RadioButton("Instalock", &S.gameTab.instalockEnabled, 1);
+			ImGui::SameLine();
+			ImGui::RadioButton("Instapick", &S.gameTab.instalockEnabled, 2);
 			ImGui::SameLine();
 			ImGui::SetNextItemWidth(static_cast<float>(S.Window.width / 6));
 			if (ImGui::ComboAutoSelect("##comboInstalock", instalockComboData))
@@ -618,30 +636,25 @@ public:
 			ImGui::SameLine();
 			ImGui::HelpMarker("Ignores backup pick");
 
-			static std::string chosenBackup = "Backup pick \t\t\tChosen: " + Misc::ChampIdToName(S.gameTab.backupId) + "###AnimatedBackup";
-			static int lastBackupId = 0;
-			if ((lastBackupId != S.gameTab.backupId) && !isStillBeingFetched)
-			{
-				lastBackupId = S.gameTab.backupId;
-				chosenBackup = "Backup pick \t\t\tChosen: " + Misc::ChampIdToName(S.gameTab.backupId) + "###AnimatedBackup";
-			}
-			if (ImGui::CollapsingHeader(chosenBackup.c_str()))
-			{
-				ImGui::Text("None");
-				ImGui::SameLine();
-				ImGui::RadioButton("##noneBackupPick", &S.gameTab.backupId, 0);
-				std::vector<std::pair<int, std::string>> instalockChamps = GetInstalockChamps();
-				for (const auto& [fst, snd] : instalockChamps)
-				{
-					char bufchamp[128];
-					sprintf_s(bufchamp, "##Select %s", snd.c_str());
-					ImGui::Text("%s", snd.c_str());
-					ImGui::SameLine();
-					ImGui::RadioButton(bufchamp, &S.gameTab.backupId, fst);
-				}
-			}
+			ImGui::Text("Backup pick:");
+			ImGui::SameLine();
 
-			ImGui::Checkbox("Auto ban", &S.gameTab.autoBanEnabled);
+			ImGui::SetNextItemWidth(static_cast<float>(S.Window.width / 6));
+			if (ImGui::ComboAutoSelect("##comboBackupPick", backupPickComboData))
+				if (backupPickComboData.index != -1 && backupPickComboData.index != 0) {
+					for (const auto& champ : champSkins)
+						if (backupPickComboData.input == champ.name)
+							S.gameTab.backupId = champ.key;
+				}
+				else
+					S.gameTab.backupId = 0;
+			
+			ImGui::SameLine();
+			ImGui::HelpMarker("Select None or leave this blank to disable");
+
+			ImGui::Columns(1);
+
+			ImGui::Text("Autoban:");
 			ImGui::SameLine();
 
 			static ImGui::ComboAutoSelectData autobanComboData;
@@ -653,7 +666,7 @@ public:
 					autobanChampsNames.reserve(champSkins.size() + 1);
 					autobanChampsNames.emplace_back("None");
 
-					if (S.gameTab.autoBanId == -1)
+					if (S.gameTab.autoBanId == 0)
 					{
 						std::ranges::copy("None", autobanComboData.input);
 					}
@@ -680,24 +693,22 @@ public:
 			ImGui::SetNextItemWidth(static_cast<float>(S.Window.width / 6));
 			if (ImGui::ComboAutoSelect("##comboAutoban", autobanComboData))
 			{
-				if (autobanComboData.index != -1)
+				if (autobanComboData.index != -1 && autobanComboData.index != 0)
 				{
-					if (std::string(autobanComboData.input) == "None")
+					for (const auto& [key, name, skins] : champSkins)
 					{
-						S.gameTab.autoBanId = -1;
-					}
-					else
-					{
-						for (const auto& [key, name, skins] : champSkins)
+						if (autobanComboData.input == name)
 						{
-							if (autobanComboData.input == name)
-							{
-								S.gameTab.autoBanId = key;
-							}
+							S.gameTab.autoBanId = key;
 						}
 					}
 				}
+				else
+					S.gameTab.autoBanId = 0;
 			}
+
+			ImGui::SameLine();
+			ImGui::HelpMarker("Select None or leave this blank to disable");
 
 			ImGui::SameLine();
 			ImGui::SetNextItemWidth(static_cast<float>(S.Window.width / 6));
@@ -706,400 +717,6 @@ public:
 			ImGui::SameLine();
 
 			ImGui::Checkbox("Instant Mute", &S.gameTab.instantMute);
-
-			/*
-				Free ARAM Boost exploit
-				Fun fact: I've reported this to Riot on 23rd August 2021 together with the refund exploit
-				I've got a response that my report is a duplicate (it wasn't, I found the exploits)
-				Almost 2 years later, both of them are still not fixed.
-			*/
-
-			ImGui::SeparatorText("Free ARAM Boost");
-
-			static std::string storeToken; // EntityAssignedButNoRead
-			static cpr::Header storeHeader;
-			static std::string accountId;
-			static std::string boosted;
-			static int ownedRP;
-			if (ImGui::Button("Is boost available for this account?"))
-			{
-				Json::CharReaderBuilder builder;
-				const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
-				JSONCPP_STRING err;
-				Json::Value root;
-
-				// get rp amount
-				std::string getWallet = LCU::Request("GET", "https://127.0.0.1/lol-inventory/v1/wallet/RP");
-				if (reader->parse(getWallet.c_str(), getWallet.c_str() + static_cast<int>(getWallet.length()), &root, &err))
-				{
-					ownedRP = root["RP"].asInt();
-				}
-
-				// get accountId
-				std::string getSession = LCU::Request("GET", "https://127.0.0.1/lol-login/v1/session");
-				if (reader->parse(getSession.c_str(), getSession.c_str() + static_cast<int>(getSession.length()), &root, &err))
-				{
-					accountId = root["accountId"].asString();
-				}
-
-				if (!CheckJWT(accountId) && ownedRP < 95)
-				{
-					int timeleft = 0;
-					std::string temp = GetOldJWT(accountId, timeleft);
-					timeleft = timeleft + 60 * 60 * 24 - time(nullptr);
-					int minutes = timeleft / 60 - 60 * (timeleft / (60 * 60));
-					boosted = "Boost available, time left on this account: " + std::to_string(timeleft / (60 * 60)) + ":" + std::to_string(minutes);
-				}
-				else
-				{
-					// get owned champions
-					std::vector<int> ownedChampions;
-					std::string getChampions = LCU::Request("GET", "https://127.0.0.1/lol-inventory/v2/inventory/CHAMPION");
-					if (reader->parse(getChampions.c_str(), getChampions.c_str() + static_cast<int>(getChampions.length()), &root, &err))
-					{
-						if (root.isArray())
-						{
-							for (auto obj : root)
-							{
-								if (obj["ownershipType"].asString() == "OWNED")
-								{
-									ownedChampions.emplace_back(obj["itemId"].asInt());
-								}
-							}
-						}
-					}
-
-					std::vector<std::pair<int, int>> champsToBuy; // price, id
-					std::string getCatalog = LCU::Request("GET", "https://127.0.0.1/lol-store/v1/catalog");
-					if (reader->parse(getCatalog.c_str(), getCatalog.c_str() + static_cast<int>(getCatalog.length()), &root, &err))
-					{
-						if (root.isArray())
-						{
-							for (auto obj : root)
-							{
-								if (obj["inventoryType"].asString() == "CHAMPION")
-								{
-									if (obj["sale"].empty() == true)
-									{
-										for (Json::Value::ArrayIndex i = 0; i < obj["prices"].size(); i++)
-										{
-											if (auto price = obj["prices"][i]; price["currency"].asString() == "RP")
-											{
-												champsToBuy.emplace_back(price["cost"].asInt(), obj["itemId"].asInt());
-											}
-										}
-									}
-									else
-									{
-										for (Json::Value::ArrayIndex i = 0; i < obj["sale"]["prices"].size(); i++)
-										{
-											if (auto sale = obj["sale"]["prices"][i]; sale["currency"].asString() == "RP")
-											{
-												champsToBuy.emplace_back(sale["cost"].asInt(), obj["itemId"].asInt());
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-
-					int idToBuy = 0;
-					int priceToBuy = 0;
-
-					for (auto [fst, snd] : champsToBuy)
-					{
-						bool found = false;
-						for (int id : ownedChampions)
-						{
-							if (snd == id)
-							{
-								found = true;
-								break;
-							}
-						}
-						if (!found)
-						{
-							if (ownedRP - fst > 0 && ownedRP - fst < 95)
-							{
-								priceToBuy = fst;
-								idToBuy = snd;
-								break;
-							}
-						}
-					}
-					if (idToBuy != 0 && priceToBuy != 0)
-					{
-						boosted = "Boost is available for this account";
-					}
-					else
-					{
-						boosted = "Boost IS NOT available for this account";
-					}
-				}
-			}
-
-			ImGui::SameLine();
-
-			if (ImGui::Button("Free ARAM/ARURF boost"))
-			{
-				Json::CharReaderBuilder builder;
-				const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
-				JSONCPP_STRING err;
-				Json::Value root;
-
-				// get rp ammount
-				std::string getWallet = LCU::Request("GET", "https://127.0.0.1/lol-inventory/v1/wallet/RP");
-				if (reader->parse(getWallet.c_str(), getWallet.c_str() + static_cast<int>(getWallet.length()), &root, &err))
-				{
-					ownedRP = root["RP"].asInt();
-				}
-
-				// get accountId
-				std::string getSession = LCU::Request("GET", "https://127.0.0.1/lol-login/v1/session");
-				if (reader->parse(getSession.c_str(), getSession.c_str() + static_cast<int>(getSession.length()), &root, &err))
-				{
-					accountId = root["accountId"].asString();
-				}
-
-				bool bNeedNewJwt = true;
-				if (!CheckJWT(accountId))
-				{
-					bNeedNewJwt = false;
-					if (ownedRP >= 95)
-						bNeedNewJwt = true;
-				}
-
-				// get owned champions
-				std::vector<int> ownedChampions;
-				std::string getChampions = LCU::Request("GET", "https://127.0.0.1/lol-inventory/v2/inventory/CHAMPION");
-				if (reader->parse(getChampions.c_str(), getChampions.c_str() + static_cast<int>(getChampions.length()), &root, &err))
-				{
-					if (root.isArray())
-					{
-						for (auto obj : root)
-						{
-							if (obj["ownershipType"].asString() == "OWNED")
-							{
-								ownedChampions.emplace_back(obj["itemId"].asInt());
-							}
-						}
-					}
-				}
-
-				std::vector<std::pair<int, int>> champsToBuy; // price, id
-				std::string getCatalog = LCU::Request("GET", "https://127.0.0.1/lol-store/v1/catalog");
-				if (reader->parse(getCatalog.c_str(), getCatalog.c_str() + static_cast<int>(getCatalog.length()), &root, &err))
-				{
-					if (root.isArray())
-					{
-						for (auto obj : root)
-						{
-							if (obj["inventoryType"].asString() == "CHAMPION")
-							{
-								if (obj["sale"].empty() == true)
-								{
-									for (Json::Value::ArrayIndex i = 0; i < obj["prices"].size(); i++)
-									{
-										if (auto price = obj["prices"][i]; price["currency"].asString() == "RP")
-										{
-											champsToBuy.emplace_back(price["cost"].asInt(), obj["itemId"].asInt());
-										}
-									}
-								}
-								else
-								{
-									for (Json::Value::ArrayIndex i = 0; i < obj["sale"]["prices"].size(); i++)
-									{
-										if (auto sale = obj["sale"]["prices"][i]; sale["currency"].asString() == "RP")
-										{
-											champsToBuy.emplace_back(sale["cost"].asInt(), obj["itemId"].asInt());
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-
-				int idToBuy = 0;
-				int priceToBuy = 0;
-
-				for (auto [fst, snd] : champsToBuy)
-				{
-					bool found = false;
-					for (int id : ownedChampions)
-					{
-						if (snd == id)
-						{
-							found = true;
-							break;
-						}
-					}
-					if (!found)
-					{
-						if (ownedRP - fst > 0 && ownedRP - fst < 95)
-						{
-							priceToBuy = fst;
-							idToBuy = snd;
-							break;
-						}
-					}
-				}
-				if ((idToBuy != 0 && priceToBuy != 0) || !bNeedNewJwt)
-				{
-					std::string getStoreUrl = LCU::Request("GET", "https://127.0.0.1/lol-store/v1/getStoreUrl");
-					std::erase(getStoreUrl, '"');
-
-					Json::CharReaderBuilder builder2;
-					const std::unique_ptr<Json::CharReader> reader2(builder2.newCharReader());
-					JSONCPP_STRING err2;
-					Json::Value root2;
-
-					// get signedWalletJwt
-					std::string signedWalletJwt = LCU::Request("GET", "https://127.0.0.1/lol-inventory/v1/signedWallet/RP");
-					if (reader2->parse(signedWalletJwt.c_str(), signedWalletJwt.c_str() + static_cast<int>(signedWalletJwt.length()), &root2, &err2))
-					{
-						signedWalletJwt = root2["RP"].asString();
-						if (bNeedNewJwt)
-						{
-							SaveJWT(accountId, signedWalletJwt, time(nullptr));
-						}
-						else
-						{
-							int timeleft = 0;
-							signedWalletJwt = GetOldJWT(accountId, timeleft);
-						}
-
-						Json::CharReaderBuilder builder3;
-						const std::unique_ptr<Json::CharReader> reader3(builder3.newCharReader());
-						JSONCPP_STRING err3;
-						Json::Value root3;
-
-						// get Bearer token for store
-						std::string authorizations = LCU::Request("GET", "https://127.0.0.1/lol-rso-auth/v1/authorization/access-token");
-						if (reader3->parse(authorizations.c_str(), authorizations.c_str() + static_cast<int>(authorizations.length()), &root3, &err3))
-						{
-							storeToken = root3["token"].asString();
-							storeHeader = Utils::StringToHeader(LCU::GetStoreHeader());
-							if (bNeedNewJwt)
-							{
-								// buy a champion
-								std::string purchaseBody = R"({"accountId":)" + accountId + R"(,"items":[{"inventoryType":"CHAMPION","itemId":)" +
-									std::to_string(idToBuy)
-									+ R"(,"ipCost":null,"rpCost":)" + std::to_string(priceToBuy) + R"(,"quantity":1}]})";
-								std::string purchaseUrl = getStoreUrl + "/storefront/v3/purchase?language=en_US";
-								std::string purchase = cpr::Post(cpr::Url{ purchaseUrl }, cpr::Body{ purchaseBody }, cpr::Header{ storeHeader }).text;
-								boosted = "Bought " + ChampIdToName(idToBuy) + " - dont play this champion, or you wont be able to refund RP";
-							}
-
-							std::this_thread::sleep_for(std::chrono::seconds(1));
-
-							// boost with signedWalletJwt
-							std::string boostUrl =
-								R"(https://127.0.0.1/lol-login/v1/session/invoke?destination=lcdsServiceProxy&method=call&args=["","teambuilder-draft","activateBattleBoostV1","{\"signedWalletJwt\":\")"
-								+ signedWalletJwt + R"(\"}"])";
-							LCU::Request("POST", boostUrl);
-						}
-					}
-				}
-				else
-				{
-					boosted = "Ineligible for boost on this account";
-				}
-			}
-
-			ImGui::SameLine();
-
-			if (ImGui::Button("Refund RP"))
-			{
-				Json::CharReaderBuilder builder;
-				const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
-				JSONCPP_STRING err;
-				Json::Value root;
-
-				// get accountId
-				std::string getSession = LCU::Request("GET", "https://127.0.0.1/lol-login/v1/session");
-				if (reader->parse(getSession.c_str(), getSession.c_str() + static_cast<int>(getSession.length()), &root, &err))
-				{
-					accountId = root["accountId"].asString();
-				}
-
-				std::string getStoreUrl = LCU::Request("GET", "https://127.0.0.1/lol-store/v1/getStoreUrl");
-				std::erase(getStoreUrl, '"');
-
-				std::string authorizations = LCU::Request("GET", "https://127.0.0.1/lol-rso-auth/v1/authorization/access-token");
-				if (reader->parse(authorizations.c_str(), authorizations.c_str() + static_cast<int>(authorizations.length()), &root, &err))
-				{
-					storeToken = root["token"].asString();
-					storeHeader = Utils::StringToHeader(LCU::GetStoreHeader());
-				}
-
-				std::string historyUrl = getStoreUrl + "/storefront/v3/history/purchase?language=en_US";
-				std::string getHistory = cpr::Get(cpr::Url{ historyUrl }, cpr::Header{ storeHeader }).text;
-				if (reader->parse(getHistory.c_str(), getHistory.c_str() + static_cast<int>(getHistory.length()), &root, &err))
-				{
-					if (root["transactions"].isArray())
-					{
-						for (Json::Value::ArrayIndex i = 0; i < root["transactions"].size(); i++)
-						{
-							if (auto transaction = root["transactions"][i]; transaction["refundable"].asBool() == true)
-							{
-								if (transaction["inventoryType"].asString() == "CHAMPION")
-								{
-									if (transaction["currencyType"].asString() == "RP")
-									{
-										if (transaction["requiresToken"].asBool() == false)
-										{
-											std::string refundUrl = getStoreUrl + "/storefront/v3/refund";
-											std::string refundBody = R"({"accountId":)" + accountId + R"(,"transactionId":")" + transaction[
-												"transactionId"].asString() + R"(","inventoryType":"CHAMPION","language":"en_US"})";
-												Post(cpr::Url{ refundUrl }, cpr::Body{ refundBody }, cpr::Header{ storeHeader });
-												boosted = "Refunded";
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-
-			ImGui::SameLine();
-			ImGui::HelpMarker("Instructions:\n"
-				"You have to wait at least 1 hour after finishing your last game, otherwise the RP you used for boost will get consumed\n"
-				"The longer you wait, the better. On a single token you can boost unlimited amount of times in 24h\n"
-				"The exploit stores your RP, buys a champion with RP so you're left with <95 and then boosts using the stored RP\n"
-				"Don't play with the champion the boost bought, or you wont be able to get your RP back\n");
-
-			ImGui::TextWrapped(boosted.c_str());
-
-			//ImGui::Separator();
-
-			// Patched :(
-			//if (ImGui::Button("Free ARAM/ARURF boost"))
-			//{
-			//	std::string wallet = http->Request("GET", "https://127.0.0.1/lol-inventory/v1/wallet/RP", "", auth->leagueHeader, "", "", auth->leaguePort);
-			//	Json::CharReaderBuilder builder;
-			//	const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
-			//	JSONCPP_STRING err;
-			//	Json::Value root;
-			//	if (!reader->parse(wallet.c_str(), wallet.c_str() + static_cast<int>(wallet.length()), &root, &err))
-			//		result = wallet;
-			//	else
-			//	{
-			//		if (unsigned RP = root["RP"].asUInt(); RP < 95)
-			//		{
-			//			result = http->Request("POST", R"(https://127.0.0.1/lol-login/v1/session/invoke?destination=lcdsServiceProxy&method=call&args=["","teambuilder-draft","activateBattleBoostV1",""])", "", auth->leagueHeader, "", "", auth->leaguePort);
-			//		}
-			//		else
-			//		{
-			//			MessageBoxA(0, "You have enough RP", "It's not possible to grant you a free skin boost", 0);
-			//		}
-			//	}
-			//}
-			//ImGui::SameLine();
-			//Misc::HelpMarker("Works only when you don't have enough RP for boost");
 
 			static Json::StreamWriterBuilder wBuilder;
 			static std::string sResultJson;
@@ -1321,9 +938,9 @@ public:
 				continue;
 			}
 
-			if (S.gameTab.autoAcceptEnabled || (S.gameTab.autoBanEnabled && S.gameTab.autoBanId) ||
-				(S.gameTab.dodgeOnBan && S.gameTab.instalockEnabled) ||
-				(S.gameTab.instalockEnabled && S.gameTab.instalockId) ||
+			if (S.gameTab.autoAcceptEnabled || S.gameTab.autoBanId != 0 ||
+				(S.gameTab.dodgeOnBan && S.gameTab.instalockEnabled != 0) ||
+				(S.gameTab.instalockEnabled != 0 && S.gameTab.instalockId) ||
 				!S.gameTab.instantMessage.empty())
 			{
 				Json::Value rootSearch;
@@ -1391,7 +1008,7 @@ public:
 						}
 					}
 
-					if ((S.gameTab.instalockEnabled || S.gameTab.autoBanId) && !isPicked)
+					if ((S.gameTab.instalockEnabled != 0 || S.gameTab.autoBanId) && !isPicked)
 					{
 						// get own summid
 						session.SetUrl(std::format("https://127.0.0.1:{}/lol-login/v1/session", LCU::league.port));
@@ -1415,7 +1032,7 @@ public:
 								if (action["actorCellId"].asInt() == cellId)
 								{
 									if (std::string actionType = action["type"].asString(); actionType == "pick"
-										&& S.gameTab.instalockId && S.gameTab.instalockEnabled)
+										&& S.gameTab.instalockId && S.gameTab.instalockEnabled != 0)
 									{
 										// if haven't picked yet
 										if (action["completed"].asBool() == false)
@@ -1437,7 +1054,12 @@ public:
 												session.SetUrl(std::format("https://127.0.0.1:{}/lol-champ-select/v1/session/actions/{}",
 													LCU::league.port,
 													action["id"].asString()));
-												session.SetBody(R"({"completed":true,"championId":)" + std::to_string(currentPick) + "}");
+												if (S.gameTab.instalockEnabled == 1)
+													session.SetBody(R"({"completed":true,"championId":)" + std::to_string(currentPick) + "}");
+												else {
+													session.SetBody(R"({"championId":)" + std::to_string(currentPick) + "}");
+													isPicked = true;
+												}
 												session.Patch();
 											}
 										}
@@ -1446,7 +1068,7 @@ public:
 											isPicked = true;
 										}
 									}
-									else if (actionType == "ban" && S.gameTab.autoBanId && S.gameTab.autoBanEnabled)
+									else if (actionType == "ban" && S.gameTab.autoBanId != 0)
 									{
 										if (action["completed"].asBool() == false)
 										{
@@ -1461,7 +1083,7 @@ public:
 									}
 								}
 								// action that isn't our player, if dodge on ban enabled or backup pick
-								else if ((S.gameTab.dodgeOnBan || S.gameTab.backupId) && S.gameTab.instalockEnabled
+								else if ((S.gameTab.dodgeOnBan || S.gameTab.backupId) && S.gameTab.instalockEnabled != 0
 									&& S.gameTab.instalockId && (S.gameTab.instalockId != -1))
 								{
 									if (isPicked)
