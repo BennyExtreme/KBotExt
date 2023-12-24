@@ -522,6 +522,8 @@ public:
 			std::ranges::copy(S.gameTab.instantMessage, bufInstantMessage);
 			ImGui::SetNextItemWidth(static_cast<float>(S.Window.width / 6));
 			ImGui::InputText("##inputInstantMessage", bufInstantMessage, IM_ARRAYSIZE(bufInstantMessage));
+			ImGui::SameLine();
+			ImGui::HelpMarker("Leave this blank to disable");
 			S.gameTab.instantMessage = bufInstantMessage;
 
 			ImGui::SameLine();
