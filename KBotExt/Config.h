@@ -80,6 +80,7 @@ struct Settings
 		int backupId = 0;
 		bool instantMute = false;
 		bool sideNotification = false;
+		bool autoImportRunes = false;
 	} gameTab;
 };
 
@@ -148,6 +149,7 @@ public:
 				root["gameTab"]["backupId"] = S.gameTab.backupId;
 				root["gameTab"]["instantMute"] = S.gameTab.instantMute;
 				root["gameTab"]["sideNotification"] = S.gameTab.sideNotification;
+				root["gameTab"]["autoImportRunes"] = S.gameTab.autoImportRunes;
 
 				{
 					root["ignoredVersions"] = Json::Value(Json::arrayValue);
@@ -256,6 +258,8 @@ public:
 					S.gameTab.instantMute = t.asBool();
 				if (auto t = root["gameTab"]["sideNotification"]; !t.empty())
 					S.gameTab.sideNotification = t.asBool();
+				if (auto t = root["gameTab"]["autoImportRunes"]; !t.empty())
+					S.gameTab.autoImportRunes = t.asBool();
 
 				if (root["ignoredVersions"].isArray() && !root["ignoredVersions"].empty())
 				{

@@ -599,12 +599,16 @@ public:
 				}
 			}
 
+			ImGui::Columns(1);
+
 			ImGui::RadioButton("Off", &S.gameTab.instalockEnabled, 0);
 			ImGui::SameLine();
 			ImGui::RadioButton("Instalock", &S.gameTab.instalockEnabled, 1);
 			ImGui::SameLine();
 			ImGui::RadioButton("Instapick", &S.gameTab.instalockEnabled, 2);
-			ImGui::SameLine();
+			
+			ImGui::Columns(1);
+
 			ImGui::SetNextItemWidth(static_cast<float>(S.Window.width / 6));
 			if (ImGui::ComboAutoSelect("##comboInstalock", instalockComboData))
 			{
@@ -630,6 +634,12 @@ public:
 			ImGui::SetNextItemWidth(static_cast<float>(S.Window.width / 6));
 
 			ImGui::SliderInt("Delay##sliderInstalockDelay", &S.gameTab.instalockDelay, 0, 10000, "%d ms");
+
+			ImGui::SameLine();
+
+			ImGui::Checkbox("Auto import runes", &S.gameTab.autoImportRunes);
+			ImGui::SameLine();
+			ImGui::HelpMarker("Works only with Instalock");
 
 			ImGui::SameLine();
 
@@ -1063,6 +1073,9 @@ public:
 													isPicked = true;
 												}
 												session.Patch();
+
+												if (S.gameTab.instalockEnabled == 1 && S.gameTab.autoImportRunes)
+													ChangeRunesOpgg();
 											}
 										}
 										else
