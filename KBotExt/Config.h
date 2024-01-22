@@ -65,6 +65,7 @@ struct Settings
 	{
 		size_t indexFirstRole = 0;
 		size_t indexSecondRole = 0;
+		bool autoMultiSearch = false;
 		size_t indexMultiSearch = 0;
 		bool autoAcceptEnabled = false;
 		int instalockEnabled = 0;
@@ -134,6 +135,7 @@ public:
 
 				root["gameTab"]["indexFirstRole"] = S.gameTab.indexFirstRole;
 				root["gameTab"]["indexSecondRole"] = S.gameTab.indexSecondRole;
+				root["gameTab"]["autoMultiSearch"] = S.gameTab.autoMultiSearch;
 				root["gameTab"]["indexMultiSearch"] = S.gameTab.indexMultiSearch;
 				root["gameTab"]["autoAcceptEnabled"] = S.gameTab.autoAcceptEnabled;
 				root["gameTab"]["instalockEnabled"] = S.gameTab.instalockEnabled;
@@ -228,6 +230,8 @@ public:
 					S.gameTab.indexFirstRole = t.asUInt();
 				if (auto t = root["gameTab"]["indexSecondRole"]; !t.empty())
 					S.gameTab.indexSecondRole = t.asUInt();
+				if (auto t = root["gameTab"]["autoMultiSearch"]; !t.empty())
+					S.gameTab.autoMultiSearch = t.asBool();
 				if (auto t = root["gameTab"]["indexMultiSearch"]; !t.empty())
 					S.gameTab.indexMultiSearch = t.asUInt();
 				if (auto t = root["gameTab"]["autoAcceptEnabled"]; !t.empty())

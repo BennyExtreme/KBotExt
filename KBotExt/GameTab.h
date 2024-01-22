@@ -394,7 +394,9 @@ public:
 				"OP.GG", "U.GG", "PORO.GG", "Porofessor.gg"
 			};
 			const char* selectedMultiSearch = itemsMultiSearch[S.gameTab.indexMultiSearch].c_str();
-
+			
+			ImGui::Checkbox("Auto", &S.gameTab.autoMultiSearch);
+			ImGui::SameLine();
 			if (ImGui::Button("Multi-Search"))
 			{
 				result = MultiSearch(itemsMultiSearch[S.gameTab.indexMultiSearch]);
@@ -1017,6 +1019,13 @@ public:
 						{
 							std::thread instantMessageThread(&GameTab::InstantMessage, S.gameTab.instantMute, S.gameTab.sideNotification);
 							instantMessageThread.detach();
+						}
+
+						if (S.gameTab.autoMultiSearch) {
+							static std::vector<std::string> itemsMultiSearch = {
+								"OP.GG", "U.GG", "PORO.GG", "Porofessor.gg"
+							};
+							MultiSearch(itemsMultiSearch[S.gameTab.indexMultiSearch]);
 						}
 					}
 
