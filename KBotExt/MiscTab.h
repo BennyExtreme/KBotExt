@@ -395,43 +395,6 @@ public:
 				ImGui::EndCombo();
 			}
 
-			ImGui::NextColumn();
-
-			if (ImGui::Button("Refund last purchase"))
-			{
-				if (MessageBoxA(nullptr, "Are you sure?", "Refunding last purchase", MB_OKCANCEL) == IDOK)
-				{
-					Json::CharReaderBuilder builder;
-					const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
-					JSONCPP_STRING err;
-					Json::Value rootPurchaseHistory;
-
-					cpr::Header storeHeader = Utils::StringToHeader(LCU::GetStoreHeader());
-
-					std::string storeUrl = LCU::Request("GET", "/lol-store/v1/getStoreUrl");
-					std::erase(storeUrl, '"');
-
-					std::string purchaseHistory = cpr::Get(cpr::Url{ storeUrl + "/storefront/v3/history/purchase" }, cpr::Header{ storeHeader }).text;
-					if (reader->parse(purchaseHistory.c_str(), purchaseHistory.c_str() + static_cast<int>(purchaseHistory.length()),
-						&rootPurchaseHistory, &err))
-					{
-						std::string accountId = rootPurchaseHistory["player"]["accountId"].asString();
-						std::string transactionId = rootPurchaseHistory["transactions"][0]["transactionId"].asString();
-						result = cpr::Post(cpr::Url{ storeUrl + "/storefront/v3/refund" }, cpr::Header{ storeHeader },
-							cpr::Body{
-								"{\"accountId\":" + accountId + R"(,"transactionId":")" + transactionId +
-								R"(","inventoryType":"CHAMPION","language":"en_US"})"
-							}).text;
-					}
-					else
-					{
-						result = purchaseHistory;
-					}
-				}
-			}
-			ImGui::SameLine();
-			ImGui::HelpMarker("Can refund anything, even loot");
-
 			ImGui::Columns(1);
 
 			// Getting closest champion name with Levenshtein distance algorithm and getting it's id
