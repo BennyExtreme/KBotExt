@@ -1,3 +1,8 @@
+## STATUS
+> [!CAUTION]
+> **This fork of the repository will be kept for informational purposes only, the tool is detected by Riot Vanguard Anti-Cheat, and you will receive a 14-day or permanent ban for third-party programs if you try to use it.**
+
+## Screenshots
 ![Example](https://i.imgur.com/CGqqISA.png)
 
 [More screenshots](https://imgur.com/a/ijCiC3F)
